@@ -1,0 +1,35 @@
+#!/bin/bash
+
+yum -y update
+yum -y install cronie curl net-tools
+
+systemctl enable crond
+systemctl start crond
+
+cat <<'EOF' > /root/sysinfo.sh
+#!/bin/bash
+
+{
+    echo "--------------------------------------------------------------"
+    echo "Date and Time: $(date)"
+    echo "System Uptime, Logged-in Users, and CPU Load:"
+    w
+    echo "Memory Usage and Disk Space Usage:"
+    free -m
+    df -h
+    echo "List of Programs Using Open TCP Ports:"
+    ss -tulpn
+    echo "Connection to ukr.net:"
+    ping -c1 -w1 ukr.net
+    echo "List of SUID Programs:"
+    find / -perm -4000 2>/dev/null
+    echo "--------------------------------------------------------------"
+} >> /var/log/sysinfo
+EOF
+
+chmod +x /root/sysinfo.sh
+
+echo "* * * * 1-5 root /root/sysinfo.sh" >> /etc/crontab
+
+systemctl restart crond
+
