@@ -3,8 +3,8 @@
 yum -y update
 yum -y install cronie curl net-tools
 
-systemctl enable crond
-systemctl start crond
+systemctl enable cron
+systemctl start cron
 
 cat <<'EOF' > /root/sysinfo.sh
 #!/bin/bash
@@ -31,5 +31,5 @@ chmod +x /root/sysinfo.sh
 
 echo "* * * * 1-5 root /root/sysinfo.sh" >> /etc/crontab
 
-systemctl restart crond
+systemctl restart cron
 
